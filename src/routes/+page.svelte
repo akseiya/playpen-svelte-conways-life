@@ -1,6 +1,8 @@
 <script lang="ts">
-	import {
-	acorn_pattern,
+	import Board from "$lib/Board.svelte";
+import {
+	  Pattern,
+	  acorn_pattern,
     apply_pattern_at,
     blank_board,
     patterns,
@@ -10,12 +12,12 @@
     updated_board
   } from "$lib/life";
 
-  let width = 220;
+  let width = 200;
   let height = 150;
   let wrap = true;
   let spawn = [3];
   let survive = [2,3]
-  let live_chance = 0.4;
+  let live_chance = 0.1;
 
   let current_cells:boolean[][] = blank_board(width, height);
 
@@ -39,13 +41,11 @@
       pattern[0].length :
       pattern.length) >> 1);
 
-
+  const p_puffer = new Pattern(puffer_pattern).rotate().mirror();
   const use_puffer = () => {
-    use_pattern(
-      puffer_pattern,
-      1 + puffer_pattern.length,
-      (height >> 1) - (puffer_pattern[0].length >> 1),
-      true
+    current_cells = p_puffer.applied_to(
+      blank_board(width, height),
+      { top: 'middle', left: 20 }
     );
     wrap = false;
   }
@@ -77,9 +77,6 @@
     wrap = true;
   }
 
-  const flip_cell = (x:number, y:number) =>
-    current_cells[y][x] = !current_cells[y][x];
-  
   let update_delay = 1;
 
   const live_a_step = () => {
@@ -110,23 +107,21 @@
 
 <svelte:head>
   <title>Conway's Game of Life :: Svelte exercise</title>
+  <style type="text/css">
+    * {
+      --color-bg-normal:      #070F00;
+      --color-bg-faint:       #0A2000;
+      --color-bg-strong:      #474;
+      --color-content-normal: #DFC;
+      --color-content-faint:  #474;
+      --color-content-strong: #FFF;
+    }
+  </style>
 </svelte:head>
 <div class="life">
   <header>Conway's Game of Life</header>
   <main>
-    <table class="board">
-      <tbody>
-      {#each current_cells as row, row_idx}
-        <tr>
-        {#each row as cell, cell_idx}
-          <td class="{cell === true ? 'live' : 'dead'}"              
-              on:click={() => living || flip_cell(cell_idx, row_idx)}
-          ></td>
-        {/each}
-        </tr>
-      {/each}
-      </tbody>
-    </table>
+    <Board {...{current_cells, living}}/>
     <button on:click={ living ? stop_life : start_life } type="button">{ living ? 'STOP' : 'START' }</button>
     <button disabled={living} on:click={live_a_step}>STEP</button>
     <button disabled={living} on:click={() => {current_cells = blank_board(width, height)}}>CLEAR</button>
@@ -141,15 +136,6 @@
 
 <style>
 
-* {
-  --color-bg-normal:      #070F00;
-  --color-bg-faint:       #0A2000;
-  --color-bg-strong:      #474;
-  --color-content-normal: #DFC;
-  --color-content-faint:  #474;
-  --color-content-strong: #FFF;
-}
-
 div {
   font-family: Anta, sans-serif;
   font-size: 1.5vw;
@@ -163,31 +149,6 @@ header {
   font-size: 3vh;
   border-bottom: 2px solid var(--color-content-faint);
   text-align: center;
-}
-
-table.board {
-  background-color: var(--color-bg-faint);
-  border-collapse: collapse;
-  margin: 1em;
-  margin-left: auto;
-  margin-right: auto;
-}
-
-table.board td {
-  width: 5px;
-  height: 5px;
-  border: 0px solid var(--color-content-faint);
-  padding: 0;
-  margin: 0;
-  cursor: none;
-}
-
-table.board td.live {
-  background-color: var(--color-bg-strong);
-}
-
-table.board td:hover, td.live:hover {
-  background-color: var(--color-content-strong);
 }
 
 </style>
