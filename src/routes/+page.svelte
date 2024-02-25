@@ -1,6 +1,8 @@
 <script lang="ts">
-	import Board from "$lib/Board.svelte";
-import {
+	import { onMount } from "svelte";
+  import Board from "$lib/Board.svelte";
+	import { recurse_object } from "$lib/debug";
+  import {
 	  Pattern,
 	  acorn_pattern,
     apply_pattern_at,
@@ -11,9 +13,13 @@ import {
     thingy_pattern,
     updated_board
   } from "$lib/life";
+	import { themes } from "$lib/themes";
 
-  let width = 200;
-  let height = 150;
+  let theme_selected = 'green';
+
+  let width =  300;
+  let height = 260;
+  let cell_size = 2;
   let wrap = true;
   let spawn = [3];
   let survive = [2,3]
@@ -103,25 +109,27 @@ import {
     clearTimeout(life_timer);
   }
 
+  onMount(() => {
+    recurse_object(themes[theme_selected], (val, path) => {
+      const css_var_name = '--' + path.join('-');
+      document.documentElement.style.setProperty(css_var_name, val);
+    })
+  });
+
 </script>
 
 <svelte:head>
   <title>Conway's Game of Life :: Svelte exercise</title>
-  <style type="text/css">
-    * {
-      --color-bg-normal:      #070F00;
-      --color-bg-faint:       #0A2000;
-      --color-bg-strong:      #474;
-      --color-content-normal: #DFC;
-      --color-content-faint:  #474;
-      --color-content-strong: #FFF;
-    }
-  </style>
+
 </svelte:head>
-<div class="life">
+<div class="life" style="background-color:{themes.green.color.bg.normal}">
   <header>Conway's Game of Life</header>
   <main>
-    <Board {...{current_cells, living}}/>
+    <Board {...{
+      current_cells, cell_size,
+      living,
+      theme: themes[theme_selected]
+    }}/>
     <button on:click={ living ? stop_life : start_life } type="button">{ living ? 'STOP' : 'START' }</button>
     <button disabled={living} on:click={live_a_step}>STEP</button>
     <button disabled={living} on:click={() => {current_cells = blank_board(width, height)}}>CLEAR</button>
