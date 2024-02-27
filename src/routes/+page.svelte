@@ -1,142 +1,119 @@
 <script lang="ts">
-	import Board from "$lib/Board.svelte";
-import {
-	  Pattern,
-	  acorn_pattern,
-    apply_pattern_at,
+	import { onMount } from "svelte";
+
+  import Board from "$lib/Board.svelte";
+	import Tweakpad from "$lib/Tweakpad.svelte";
+
+	import { game_state, tweaks } from "$lib/stores";
+
+  import {
     blank_board,
-    patterns,
-    puffer_pattern,
     random_board,
-    thingy_pattern,
     updated_board
   } from "$lib/life";
+	import { apply_theme, themes } from "$lib/themes";
+	import { known_patterns } from "$lib/patterns";
 
-  let width = 200;
-  let height = 150;
-  let wrap = true;
-  let spawn = [3];
-  let survive = [2,3]
-  let live_chance = 0.1;
+  let step_count = 0;
 
-  let current_cells:boolean[][] = blank_board(width, height);
+  // from a cookie?
+  Object.assign($tweaks, {
+    width:200, height:140, wrap:true,
 
-  const use_pattern = (
-    pattern:string[],
-    x:number, y:number,
-    rotate: boolean = false
-  ) => {
-    const fresh_cells = blank_board(width, height);
-    apply_pattern_at(x, y, pattern, fresh_cells, rotate);
-    current_cells = fresh_cells;
+    spawn:[3], survive:[2,3],
+
+    spawn_chance:0.1,
+
+    living:false,
+    update_delay:1,
+
+    theme:'green'
+  });
+
+  let current_cells:boolean[][] = blank_board($tweaks);
+
+  const clear_board = () => {
+    current_cells = blank_board($tweaks);
+    step_count = 0;
   }
 
-  const center_pattern = (
-    pattern:string[],
-    horizontally:boolean,
-    rotated: boolean = false
-  ) =>
-    ((horizontally ? width : height) >> 1) -
-    (((horizontally || (!horizontally && rotated)) ?
-      pattern[0].length :
-      pattern.length) >> 1);
-
-  const p_puffer = new Pattern(puffer_pattern).rotate().mirror();
-  const use_puffer = () => {
-    current_cells = p_puffer.applied_to(
-      blank_board(width, height),
-      { top: 'middle', left: 20 }
-    );
-    wrap = false;
+  const rnd_board = () => {
+    current_cells = random_board($tweaks);
+    step_count = 0;
   }
 
-  const use_acorn = () => {
-    use_pattern(
-      acorn_pattern,
-      center_pattern(acorn_pattern, true),
-      center_pattern(acorn_pattern, false)
-    );
-    wrap = true;
+  const use_known_pattern = (name:keyof typeof known_patterns) => {
+    const pattern = known_patterns[name];
+    current_cells = pattern.applied_to(blank_board($tweaks));
+    $tweaks.wrap = pattern.wrap;
+    step_count = 0;
   }
-
-  const use_thingy = () => {
-    use_pattern(
-      thingy_pattern,
-      34,
-      center_pattern(acorn_pattern, false) - 5
-    );
-    wrap = true;
-  }
-
-  const use_ecologist = () => {
-    use_pattern(
-      patterns.ecologist,
-      center_pattern(acorn_pattern, true),
-      center_pattern(acorn_pattern, false)
-    );
-    wrap = true;
-  }
-
-  let update_delay = 1;
 
   const live_a_step = () => {
     current_cells = updated_board({
-      current_cells, spawn, width, height, wrap, survive
+      ...$tweaks,
+      ...$tweaks.rules,
+      current_cells,
     });
+    step_count++;
   }
 
-  let living = false;
   let life_timer:number;
 
   const life_loop = () => {
     live_a_step();
-    life_timer = setTimeout(life_loop, update_delay);
+    life_timer = setTimeout(life_loop, $tweaks.update_delay);
   }
 
   const start_life = () => {
-    living = true;
-    life_timer = setTimeout(life_loop, update_delay);
+    $game_state.living = true;
+    life_timer = setTimeout(life_loop, $tweaks.update_delay);
   }
 
   const stop_life= () => {
-    living = false;
+    $game_state.living = false;
     clearTimeout(life_timer);
   }
+
+  onMount(() => {
+    apply_theme($tweaks.theme);
+  });
 
 </script>
 
 <svelte:head>
   <title>Conway's Game of Life :: Svelte exercise</title>
-  <style type="text/css">
-    * {
-      --color-bg-normal:      #070F00;
-      --color-bg-faint:       #0A2000;
-      --color-bg-strong:      #474;
-      --color-content-normal: #DFC;
-      --color-content-faint:  #474;
-      --color-content-strong: #FFF;
-    }
-  </style>
 </svelte:head>
-<div class="life">
+<div class="life" style="background-color: {themes[$tweaks.theme].color.bg.normal}">
   <header>Conway's Game of Life</header>
   <main>
-    <Board {...{current_cells, living}}/>
-    <button on:click={ living ? stop_life : start_life } type="button">{ living ? 'STOP' : 'START' }</button>
-    <button disabled={living} on:click={live_a_step}>STEP</button>
-    <button disabled={living} on:click={() => {current_cells = blank_board(width, height)}}>CLEAR</button>
-    <button disabled={living} on:click={() => {current_cells = random_board(width, height, live_chance)}}>RANDOM</button>
-    <button disabled={living} on:click={use_acorn}>ACORN</button>
-    <button disabled={living} on:click={use_puffer}>PUFFER</button>
-    <button disabled={living} on:click={use_thingy}>Simple growth</button>
-    <button disabled={living} on:click={use_ecologist}>Ecologist</button>
-    <button disabled={living} on:click={() => { wrap = !wrap }}>{ wrap ? 'NO WRAP' : 'WRAP'}</button>
+    <Board {...{current_cells}}/>
+    <p>{step_count}</p>
+    <Tweakpad/>
+    <button on:click={$game_state.living ? stop_life : start_life }>
+      { $game_state.living ? 'STOP' : 'START' }
+    </button>
+    <button disabled={$game_state.living} on:click={live_a_step}>
+      STEP
+    </button>
+    <button disabled={$game_state.living} on:click={clear_board}>
+      CLEAR
+    </button>
+    <button disabled={$game_state.living} on:click={rnd_board}>
+      RANDOM
+    </button>
+    {#each Object.keys(known_patterns) as shape_name}
+      <button disabled={$game_state.living}
+              on:click={() => use_known_pattern(shape_name)}>
+        {shape_name}
+      </button>
+    {/each}
   </main>
 </div>
 
 <style>
 
-div {
+div.life {
   font-family: Anta, sans-serif;
   font-size: 1.5vw;
   position: absolute;
@@ -149,6 +126,10 @@ header {
   font-size: 3vh;
   border-bottom: 2px solid var(--color-content-faint);
   text-align: center;
+}
+
+button {
+  text-transform: capitalize;
 }
 
 </style>

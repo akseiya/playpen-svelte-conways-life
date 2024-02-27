@@ -1,5 +1,7 @@
+import { recurse_object } from "./debug";
+
 type Intensity = 'normal' | 'faint' | 'strong';
-export type Theme = {
+type Theme = {
   color: {
     bg: { [k in Intensity]: string },
     content: { [k in Intensity]: string }
@@ -24,3 +26,8 @@ export const themes:Theme_Set = {
   }
 }
 
+export const apply_theme = (theme_name:string) =>
+  recurse_object(themes[theme_name], (val, path) => {
+    const css_var_name = '--' + path.join('-');
+    document.documentElement.style.setProperty(css_var_name, val);
+  });
