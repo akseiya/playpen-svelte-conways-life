@@ -1,21 +1,24 @@
 <script lang="ts">
 
-import { game_state, tweaks } from '$lib/stores';
+import { state, tweaks } from '$lib/stores';
 import   board from "$lib/life";
 import { known_patterns } from './patterns';
 
 import Playback from './Playback.svelte';
 
-let current_cells:boolean[][] = board.blank($tweaks);
-let step_count = 0;
+let current_cells:boolean[][];
+let step_count:number;
 
 const clear_board = () => {
   current_cells = board.blank($tweaks);
+  $state.blank = true;
   step_count = 0;
 }
+clear_board();
 
 const rand_board = () => {
   current_cells = board.random($tweaks);
+  $state.blank = false;
   step_count = 0;
 }
 
@@ -23,6 +26,7 @@ const use_known_pattern = (name:keyof typeof known_patterns) => {
   const pattern = known_patterns[name];
   current_cells = pattern.applied_to(board.blank($tweaks));
   $tweaks.wrap = pattern.wrap;
+  $state.blank = false;
   step_count = 0;
 }
 
@@ -43,12 +47,12 @@ const life_loop = () => {
 }
 
 const start_life = () => {
-  $game_state.living = true;
+  $state.living = true;
   life_timer = setTimeout(life_loop, $tweaks.update_delay);
 }
 
 const stop_life= () => {
-  $game_state.living = false;
+  $state.living = false;
   clearTimeout(life_timer);
 }
 
@@ -97,13 +101,13 @@ table.board.nowrap {
 table.board td {
   width: 4px;
   height: 4px;
-  border: 0px solid var(--color-content-faint);
+  /* border: 0px solid var(--color-content-faint); */
   padding: 0;
   margin: 0;
   cursor: none;
 }
 table.board td.live {
-  background-color: var(--color-bg-strong);
+  background-color: var(--color-content-faint);
 }
 
 @media screen and (hover: hover) {

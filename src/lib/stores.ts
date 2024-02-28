@@ -17,6 +17,7 @@ export const tweaks = writable({
   theme: 'green'
 });
 
-export const game_state = writable({
+export const state = writable({
   living: false,
+  blank: true
 });

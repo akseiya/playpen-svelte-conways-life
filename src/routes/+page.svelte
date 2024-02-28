@@ -4,7 +4,7 @@
   import Board from "$lib/Board.svelte";
 	import Tweakpad from "$lib/Tweakpad.svelte";
 
-	import { game_state, tweaks } from "$lib/stores";
+	import { state, tweaks } from "$lib/stores";
 
 	import { apply_theme, themes } from "$lib/themes";
 	import { known_patterns } from "$lib/patterns";
@@ -15,15 +15,16 @@
 
     spawn:[3], survive:[2,3],
 
-    spawn_chance:0.07,
+    spawn_chance:0.1,
 
-    living:false,
     update_delay:1,
 
     theme:'green'
   });
 
-
+  Object.assign($state, {
+    living: false
+  });
 
   onMount(() => {
     apply_theme($tweaks.theme);

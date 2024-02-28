@@ -15,11 +15,11 @@ export const themes:Theme_Set = {
       bg: {
         normal: '#070F00',
         faint:  '#0A2000',
-        strong: '#474'
+        strong: '#262'
       },
       content: {
-        normal: '#DFC',
-        faint:  '#474',
+        normal: '#AFA',
+        faint:  '#595',
         strong: '#FFF'
       }
     }
