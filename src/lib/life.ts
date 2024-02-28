@@ -4,18 +4,19 @@ interface Board_Size {
 interface Random_Board_Parms extends Board_Size {
   spawn_chance:number;
 }
-export const blank_board = (size:Board_Size):boolean[][] =>
+
+const blank_board = (size:Board_Size):boolean[][] =>
   Array.from({ length: size.height }, () =>
     Array(size.width).fill(false));
 
-export const random_board = (parms:Random_Board_Parms) =>
+const random_board = (parms:Random_Board_Parms) =>
   Array.from({ length: parms.height }, () =>
     Array.from(
       { length: parms.width },
       () => Math.random() < parms.spawn_chance
   ));
 
-export const count_neighbours = (
+const count_neighbours = (
   current_cells: boolean[][],
   x: number, y: number,
   width: number, height: number,
@@ -35,14 +36,14 @@ export const count_neighbours = (
   return count;
 }
 
-export type Board_Update_Inputs = {
+type Board_Update_Inputs = {
   current_cells:boolean[][];
   spawn:number[];  survive:number[];
   width:number;    height:number;
   wrap?: boolean;
 }
 
-export const updated_board = (parameters: Board_Update_Inputs) => {
+const updated_board = (parameters: Board_Update_Inputs) => {
   const {
     current_cells, spawn, survive, width, height, wrap
   } = parameters;
@@ -52,4 +53,10 @@ export const updated_board = (parameters: Board_Update_Inputs) => {
       return (spawn.includes(n)) || (is_live && survive.includes(n));
     })
   );
+}
+
+export default {
+  blank: blank_board,
+  random: random_board,
+  updated: updated_board
 }

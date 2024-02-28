@@ -6,8 +6,8 @@ export const tweaks = writable({
   wrap: true,
 
   rules: {
-    spawn: [3],
-    survive: [2,3],
+    spawn:    [3],
+    survive:  [2,3],
   },
 
   spawn_chance: 0.1,
