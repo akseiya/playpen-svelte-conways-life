@@ -10,11 +10,12 @@ class Pattern_Align {
   y(y:number) { return this.y0 + y }
 
   constructor(
-    pattern: Cells, board: Cells,
-    align:Alignment_Spec
+    pattern: Cells, board: Uint8Array,
+    b_width: number, align:Alignment_Spec
   ) {
-    const height={board: board.length,    pattern: pattern.length};
-    const width ={board: board[0].length, pattern: pattern[0].length};
+    const board_height = (board.length / b_width)>>0;
+    const height={board: board_height,    pattern: pattern.length};
+    const width ={board: b_width, pattern: pattern[0].length};
 
     if (align.right === 'middle' || align.left === 'middle')
       this.x0 = (width.board - width.pattern) >> 1;
@@ -77,13 +78,14 @@ export class Pattern {
     return this;
   }
   applied_to(
-    board:boolean[][],
+    board:Uint8Array,
+    width: number,
     alignment:Alignment_Spec = this.default_alignment
   ) {
-    const align = new Pattern_Align(this.cells, board, alignment);
+    const align = new Pattern_Align(this.cells, board, width, alignment);
     this.cells.
       forEach((row, y) => row.forEach(
-        (cell, x) => board[align.y(y)][align.x(x)] = cell
+        (cell, x) => board[align.y(y) * width + align.x(x)] = Number(cell)
       ));
     return board;
   }

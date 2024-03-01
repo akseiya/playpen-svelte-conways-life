@@ -1,8 +1,6 @@
 import { writable } from "svelte/store";
 
 export const tweaks = writable({
-  width: 200,
-  height: 120,
   wrap: true,
 
   rules: {

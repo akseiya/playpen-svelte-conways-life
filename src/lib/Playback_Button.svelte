@@ -18,9 +18,9 @@
   $: switch(func) {
     case 'stop': disabled = false; break;
     case 'start': disabled = $state.blank; break;
-    case 'step': disabled = $state.blank || $state.living; break;
+    case 'clear': case 'step': disabled = $state.blank || $state.living; break;
     case 'random':
-    case 'clear': disabled = $state.living; break;
+      disabled = $state.living; break;
   }
   // const can_disable = !['start', 'stop'].includes(func);
 </script>
@@ -38,20 +38,20 @@ button {
   font-variation-settings: 'FILL' 1;
   background-color: var(--color-bg-strong);
   margin: 0.5em;
-  border: 0;
+  border: 0.1em solid var(--color-bg-strong);
   border-radius: 50%;
   padding: 0.3em;
   color: var(--color-content-normal);
 }
 
 button:enabled {
-  border: 0.1em solid var(--color-content-normal);
+   border-color: var(--color-content-normal);
 }
 
 @media screen and (hover: hover) {
   button:enabled:hover {
     color: var(--color-content-strong);
-    background-color: var(--color-bg-faint);
+    border-color: var(--color-content-strong);
   }
 }
 

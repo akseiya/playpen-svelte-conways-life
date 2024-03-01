@@ -5,30 +5,22 @@
 	import Tweakpad from "$lib/Tweakpad.svelte";
 
 	import { state, tweaks } from "$lib/stores";
-
 	import { apply_theme, themes } from "$lib/themes";
-	import { known_patterns } from "$lib/patterns";
 
   // from a cookie?
+  const width = 180;
+  const height = 180;
+
   Object.assign($tweaks, {
-    width:200, height:140, wrap:true,
-
+    width:180, height:180, wrap:true,
     spawn:[3], survive:[2,3],
-
     spawn_chance:0.1,
-
-    update_delay:1,
-
+    update_delay:0,
     theme:'green'
   });
+  Object.assign($state, { living: false, blank: true });
 
-  Object.assign($state, {
-    living: false
-  });
-
-  onMount(() => {
-    apply_theme($tweaks.theme);
-  });
+  onMount(() => { apply_theme($tweaks.theme) });
 
 </script>
 
@@ -38,7 +30,7 @@
 <div class="life" style="background-color: {themes[$tweaks.theme].color.bg.normal}">
   <header>Conway's Game of Life</header>
   <main>
-    <Board/>
+    <Board {width} {height}/>
     <Tweakpad/>
   </main>
 </div>
