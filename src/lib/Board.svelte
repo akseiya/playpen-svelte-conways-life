@@ -62,7 +62,7 @@ const stop_life= () => { $state.living = false; }
 const execute_command = (command:string) => {
   switch(command) {
     case 'start':  start_life();  break;
-    case 'stop':   stop_life();   break;
+    case 'pause':  stop_life();   break;
     case 'step':   live_a_step(); break;
     case 'clear':  clear_board(); break;
     case 'random': rand_board();  break;

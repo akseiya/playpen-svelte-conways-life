@@ -7,13 +7,13 @@
 
   const dispatch = CED<{ use_pattern: { pattern: string } }>();
 
-   let disabled:boolean;
-  let start_stop:string;
+  let disabled:boolean;
+  let start_pause:string;
   let playback_functions:string[];
 
   $: disabled = $state.living;
-  $: start_stop = $state.living ? 'stop' : 'start';
-  $: playback_functions = [start_stop, 'step', 'clear', 'random'];
+  $: start_pause = $state.living ? 'pause' : 'start';
+  $: playback_functions = [start_pause, 'step', 'clear', 'random'];
 </script>
 
 {#each playback_functions as func}

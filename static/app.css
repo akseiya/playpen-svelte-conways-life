@@ -21,3 +21,7 @@
   white-space:    nowrap;
   direction:      ltr;
 }
+
+* {
+  box-sizing: border-box;
+}

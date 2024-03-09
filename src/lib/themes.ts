@@ -1,14 +1,6 @@
 import { recurse_object } from "./debug";
 
-type Intensity = 'normal' | 'faint' | 'strong';
-type Theme = {
-  color: {
-    bg: { [k in Intensity]: string },
-    content: { [k in Intensity]: string }
-  }
-}
-
-type Theme_Set = Record<string,Theme>;
+type Theme_Set = Record<string,object>;
 export const themes:Theme_Set = {
   green: {
     color: {

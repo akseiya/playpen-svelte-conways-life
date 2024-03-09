@@ -12,7 +12,7 @@
   const height = 180;
 
   Object.assign($tweaks, {
-    width:180, height:180, wrap:true,
+    width, height, wrap:true,
     spawn:[3], survive:[2,3],
     spawn_chance:0.1,
     update_delay:0,

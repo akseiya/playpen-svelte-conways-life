@@ -31,6 +31,7 @@ const count_neighbours = (
       )) continue;
       const wrapped_i = (width + i) % width;
       const wrapped_j = (height + j) % height;
+      // count += current_cells[wrapped_j * width + wrapped_i];
       if (current_cells[wrapped_j * width + wrapped_i]) count++;
     }
   return count;
