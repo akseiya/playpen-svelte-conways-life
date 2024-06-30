@@ -1,3 +1,7 @@
+# Playpen: Conway's Game of Life
+
+An exercise in Svelte, implementing a Game of Life with web workers.
+
 # create-svelte
 
 Everything you need to build a Svelte project, powered by [`create-svelte`](https://github.com/sveltejs/kit/tree/main/packages/create-svelte).
